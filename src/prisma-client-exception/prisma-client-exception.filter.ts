@@ -8,7 +8,6 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
     console.error(exception.message);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const message = exception.message.replace(/\n/g, '');
     switch (exception.code) {
       case 'P2002':
         var status = HttpStatus.CONFLICT;

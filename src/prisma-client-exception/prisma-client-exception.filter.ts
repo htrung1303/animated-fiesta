@@ -26,8 +26,6 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         break;
     }
 
-    super.catch(exception, host);
-
     function handleException(message: String) {
       response.status(status).json({
         statusCode: status,

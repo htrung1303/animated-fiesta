@@ -1,13 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { Prisma } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+export const roundsOfHashing = 10;
 
 @Injectable()
 export class UsersService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   create(createUserDto: Prisma.UserCreateInput) {
-    return this.databaseService.user.create({ data: createUserDto});
+    const hashedPassword = bcrypt.hashSync(
+      createUserDto.password,
+      roundsOfHashing,
+    );
+
+    createUserDto.password = hashedPassword;
+    return this.databaseService.user.create({ data: createUserDto });
   }
 
   findAll() {
@@ -18,8 +28,17 @@ export class UsersService {
     return this.databaseService.user.findUnique({ where: { id } });
   }
 
-  update(id: number, updateUserDto: Prisma.UserUpdateInput) {
-    return this.databaseService.user.update({ where: { id }, data: updateUserDto });
+  update(id: number, updateUserDto: UpdateUserDto) {
+    if (updateUserDto.password) {
+      updateUserDto.password = bcrypt.hashSync(
+        updateUserDto.password,
+        roundsOfHashing,
+      );
+    }
+    return this.databaseService.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
   }
 
   remove(id: number) {

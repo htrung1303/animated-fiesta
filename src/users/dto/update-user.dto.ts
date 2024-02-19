@@ -1,19 +1,20 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { 
   IsEmail,
-  IsNotEmpty,
   IsString,
   MinLength,
+  ValidateIf
 } from 'class-validator';
 
 export class UpdateUserDto {
   @ApiProperty()
+  @ValidateIf((o) => o.email !== undefined)
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiHideProperty()
+  @ValidateIf((o) => o.password !== undefined)
   @IsString()
-  @IsNotEmpty()
   @MinLength(8)
   password: string;
 }

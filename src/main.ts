@@ -13,6 +13,7 @@ async function bootstrap() {
     .setTitle('Animated Fiesta API')
     .setDescription('The Animated Fiesta API description')
     .setVersion('0.1')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

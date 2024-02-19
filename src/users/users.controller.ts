@@ -31,8 +31,9 @@ export class UsersController {
   @Post()
   @ApiCreatedResponse({ type: UserEntity })
   @ApiBody({ type: CreateUserDto })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const user = await this.usersService.create(createUserDto);
+    return this.toUserResponse(user);
   }
 
   @Get()
@@ -60,11 +61,12 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   @ApiBody({ type: UpdateUserDto })
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(id, updateUserDto);
+    const user = await this.usersService.update(id, updateUserDto);
+    return this.toUserResponse(user);
   }
 
   @Delete(':id')
@@ -73,5 +75,10 @@ export class UsersController {
   @ApiOkResponse({ type: UserEntity })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
+  }
+  
+  private toUserResponse(user: UserEntity) {
+    const { password, ...result } = user;
+    return result;
   }
 }

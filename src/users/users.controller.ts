@@ -21,7 +21,7 @@ import {
 import { UserEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 
 @Controller('users')
 @ApiTags('users')
@@ -37,7 +37,7 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: [UserEntity] })
   findAll() {
@@ -45,7 +45,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   async findOne(@Param('id', ParseIntPipe) id: number) {
@@ -57,7 +57,7 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   @ApiBody({ type: UpdateUserDto })
@@ -70,7 +70,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
   remove(@Param('id', ParseIntPipe) id: number) {
@@ -78,7 +78,7 @@ export class UsersController {
   }
   
   private toUserResponse(user: UserEntity) {
-    const { password, ...result } = user;
+    const { password, refreshToken, ...result } = user;
     return result;
   }
 }

@@ -5,21 +5,20 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { DatabaseModule } from 'src/database/database.module';
 import { UsersModule } from 'src/users/users.module';
-import { JwtStrategy } from './jwt.strategy';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
+import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
-export const jwtSecret = process.env.JWT_SECRET || 'jwtSecret';
+export const jwtSecret = process.env.JWT_SECRET
+export const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET
 
 @Module({
   imports: [
     DatabaseModule,
     PassportModule,
-    JwtModule.register({
-      secret: jwtSecret,
-      signOptions: { expiresIn: '10m' },
-    }),
+    JwtModule.register({}),
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
 })
 export class AuthModule {}

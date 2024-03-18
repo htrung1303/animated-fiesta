@@ -1,40 +1,38 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateWorkingDayDto } from './dto/create-working-day.dto';
-import { UpdateWorkingDayDto } from './dto/update-working-day.dto';
 
 @Injectable()
 export class WorkingDaysService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  create(createWorkingDayDto: CreateWorkingDayDto) {
-    const existingRecord = this.getCurrentWorkingDay(createWorkingDayDto.userId);
-
-    if (existingRecord) {
-      return existingRecord;
+  async create(userId: number) {
+    try {
+      const currentWorkingDay = await this.getCurrentWorkingDay(userId);
+      return currentWorkingDay;
+    } catch {
+      return this.databaseService.workingDay.create({
+        data: {
+          user: { connect: { id: userId }
+        }}},
+      );
     }
-
-    const data = {
-      checkInTime: new Date(),
-      checkOutTime: null,
-      user: {
-        connect: {
-          id: createWorkingDayDto.userId,
-        },
-      },
-    }
-    return this.databaseService.workingDay.create({ data });
   }
 
-  update(id: number) {
-    return this.databaseService.workingDay.update({
-      where: {
-        id: id,
-      },
-      data: {
-        checkOutTime: new Date(),
-      },
-    });
+  async update(userId: number) {
+    try {
+      const currentWorkingDay = await this.getCurrentWorkingDay(userId);
+      return this.databaseService.workingDay.update({
+        where: { id: currentWorkingDay.id },
+        data: { checkOutTime: new Date() },
+      });
+    } catch {
+      return this.databaseService.workingDay.create({
+        data: {
+          user: { connect: { id: userId }},
+          checkOutTime: new Date()
+        }},
+      );
+    }
   }
 
   getCurrentWorkingDay(userId: number) {
@@ -44,10 +42,9 @@ export class WorkingDaysService {
     const nextDate = new Date(currentDate);
     nextDate.setDate(nextDate.getDate() + 1);
 
-    return this.databaseService.workingDay.findFirst({
+    return this.databaseService.workingDay.findFirstOrThrow({
       where: {
         userId: userId,
-        checkOutTime: null,
         checkInTime: {
           gte: currentDate,
           lt: nextDate,

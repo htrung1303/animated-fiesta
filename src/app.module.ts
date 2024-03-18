@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { WorkingDaysModule } from './working-day/working-days.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, AuthModule, ConfigModule.forRoot(), WorkingDaysModule],
+  imports: [DatabaseModule, UsersModule, AuthModule, ConfigModule.forRoot(), WorkingDaysModule,],
   controllers: [AppController],
   providers: [AppService],
 })

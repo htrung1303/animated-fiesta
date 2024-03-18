@@ -21,6 +21,6 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException();
     }
 
-    return user;
+    return payload;
   }
 }

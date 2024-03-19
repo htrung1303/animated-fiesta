@@ -76,9 +76,8 @@ export class UsersController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }
-  
-  private toUserResponse(user: UserEntity) {
-    const { password, refreshToken, ...result } = user;
-    return result;
+
+  private toUserResponse(user: Omit<UserEntity, 'password' | 'refreshToken'>) {
+    return user;
   }
 }

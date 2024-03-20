@@ -43,7 +43,8 @@ export class AuthService {
       lastName: user.lastName,
       email: user.email,
       role: user.role,
-      ...tokens,}
+      ...tokens,
+    };
   }
 
   async refresh_tokens(payload: JwtPayload): Promise<AuthEntity> {
@@ -53,7 +54,10 @@ export class AuthService {
     return tokens;
   }
 
-  async updateRefreshToken(userId: number, refreshToken: string): Promise<void> {
+  async updateRefreshToken(
+    userId: number,
+    refreshToken: string,
+  ): Promise<void> {
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
     await this.databaseService.user.update({
@@ -70,7 +74,7 @@ export class AuthService {
     await this.databaseService.user.updateMany({
       where: {
         id: userId,
-        refreshToken: { not: null }
+        refreshToken: { not: null },
       },
       data: {
         refreshToken: null,

@@ -66,6 +66,7 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     const user = await this.usersService.update(id, updateUserDto);
+
     return this.toUserResponse(user);
   }
 
@@ -76,9 +77,11 @@ export class UsersController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }
-  
+
   private toUserResponse(user: UserEntity) {
-    const { password, refreshToken, ...result } = user;
-    return result;
+    const userCopy = { ...user };
+    delete userCopy.password;
+    delete userCopy.refreshToken;
+    return userCopy;
   }
 }

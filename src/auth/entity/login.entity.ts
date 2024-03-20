@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { AuthEntity } from "./auth.entity";
+import { ApiProperty } from '@nestjs/swagger';
+import { AuthEntity } from './auth.entity';
 
 export class LoginEntity extends AuthEntity {
   @ApiProperty()

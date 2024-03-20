@@ -8,8 +8,8 @@ import { UsersModule } from 'src/users/users.module';
 import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
-export const jwtSecret = process.env.JWT_SECRET
-export const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET
+export const jwtSecret = process.env.JWT_SECRET;
+export const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
 
 @Module({
   imports: [

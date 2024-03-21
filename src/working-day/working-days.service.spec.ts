@@ -32,11 +32,15 @@ describe('WorkingDaysService', () => {
   });
 
   it('should create working day if could not find it', async () => {
-    jest.spyOn(service, 'getCurrentWorkingDay').mockRejectedValue(new Error('Test error'));
+    jest
+      .spyOn(service, 'getCurrentWorkingDay')
+      .mockRejectedValue(new Error('Test error'));
 
     const userId = 1;
     const workingDay = await service.create(userId);
-    jest.spyOn(databaseService.workingDay, 'create').mockResolvedValueOnce(workingDay);
+    jest
+      .spyOn(databaseService.workingDay, 'create')
+      .mockResolvedValueOnce(workingDay);
 
     expect(databaseService.workingDay.create).toHaveBeenCalledWith({
       data: {
@@ -45,17 +49,80 @@ describe('WorkingDaysService', () => {
     });
   });
 
-  it('should update a working day', async () => {
+  it('should return the current working day if it could be found', async () => {
     const userId = 1;
-    const workingDay = await service.create(userId);
+    const workingDay = {
+      id: 1,
+      userId: userId,
+      checkInTime: new Date(),
+      checkOutTime: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
 
-    jest.spyOn(service, 'getCurrentWorkingDay').mockResolvedValueOnce(workingDay);
-    jest.spyOn(databaseService.workingDay, 'update').mockResolvedValueOnce(workingDay);
+    jest
+      .spyOn(service, 'getCurrentWorkingDay')
+      .mockResolvedValueOnce(workingDay);
 
-    await service.update(userId);
+    const result = await service.create(userId);
+
+    expect(result).toEqual(workingDay);
+  });
+
+  it('should update the current working day', async () => {
+    const userId = 1;
+    const workingDay = {
+      id: 1,
+      userId: userId,
+      checkInTime: new Date(),
+      checkOutTime: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    jest
+      .spyOn(service, 'getCurrentWorkingDay')
+      .mockResolvedValueOnce(workingDay);
+    await service.update(1);
+
     expect(databaseService.workingDay.update).toHaveBeenCalledWith({
-      where: { id: userId },
+      where: { id: workingDay.id },
       data: { checkOutTime: expect.any(Date) },
+    });
+  });
+
+  it('should create a new working day if updating fails', async () => {
+    service.getCurrentWorkingDay = jest.fn().mockRejectedValue(new Error());
+
+    await service.update(1);
+
+    expect(service.getCurrentWorkingDay).toHaveBeenCalledWith(1);
+    expect(databaseService.workingDay.create).toHaveBeenCalledWith({
+      data: {
+        user: { connect: { id: 1 } },
+        checkOutTime: expect.any(Date),
+      },
+    });
+  });
+
+  it('should get the current working day for a user', async () => {
+    const userId = 1;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+
+    await service.getCurrentWorkingDay(userId);
+
+    expect(databaseService.workingDay.findFirstOrThrow).toHaveBeenCalledWith({
+      where: {
+        userId: userId,
+        checkInTime: {
+          gte: currentDate,
+          lt: nextDate,
+        },
+      },
     });
   });
 });

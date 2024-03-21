@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
@@ -12,9 +12,9 @@ export class WorkingDaysService {
     } catch {
       return this.databaseService.workingDay.create({
         data: {
-          user: { connect: { id: userId }
-        }}},
-      );
+          user: { connect: { id: userId } },
+        },
+      });
     }
   }
 
@@ -28,10 +28,10 @@ export class WorkingDaysService {
     } catch {
       return this.databaseService.workingDay.create({
         data: {
-          user: { connect: { id: userId }},
-          checkOutTime: new Date()
-        }},
-      );
+          user: { connect: { id: userId } },
+          checkOutTime: new Date(),
+        },
+      });
     }
   }
 

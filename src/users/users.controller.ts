@@ -23,7 +23,7 @@ import { UserEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
-import { HideSensitiveDataInterceptor } from 'src/common/interceptors/hide-sensitive-info.interceptor';
+import { HideSensitiveDataInterceptor } from 'src/users/interceptors/hide-sensitive-info.interceptor';
 
 @Controller('users')
 @ApiTags('users')
@@ -31,7 +31,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @UseInterceptors(HideSensitiveDataInterceptor)
+  //@UseInterceptors(HideSensitiveDataInterceptor)
   @ApiCreatedResponse({ type: UserEntity })
   @ApiBody({ type: CreateUserDto })
   async create(@Body() createUserDto: CreateUserDto) {

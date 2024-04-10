@@ -5,7 +5,7 @@ import { UserEntity } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class HideSensitiveDataInterceptor implements NestInterceptor {
-  intercept(_context: ExecutionContext, next: CallHandler): Observable<UserEntity | UserEntity[]> {
+  intercept(_context: ExecutionContext, next: CallHandler): Observable<Omit<UserEntity | UserEntity[], 'password' | 'refreshToken'>> {
     return next
       .handle()
       .pipe(
@@ -13,7 +13,7 @@ export class HideSensitiveDataInterceptor implements NestInterceptor {
       );
   }
 
-  private hideSensitiveData(data: UserEntity | UserEntity[]): UserEntity | UserEntity[] {
+  private hideSensitiveData(data: UserEntity | UserEntity[]): Omit<UserEntity | UserEntity[], 'password' | 'refreshToken'> {
     if (Array.isArray(data)) {
       return data.map(item => this.hideSensitiveDataInObject(item));
     } else {
@@ -21,10 +21,8 @@ export class HideSensitiveDataInterceptor implements NestInterceptor {
     }
   }
 
-  private hideSensitiveDataInObject(data: UserEntity): UserEntity {
-    const dataCopy = { ...data };
-    delete dataCopy.password;
-    delete dataCopy.refreshToken;
-    return dataCopy;
+  private hideSensitiveDataInObject(data: UserEntity): Omit<UserEntity, 'password' | 'refreshToken'> {
+    const { password, refreshToken, ...rest } = data;
+    return rest;
   }
 }

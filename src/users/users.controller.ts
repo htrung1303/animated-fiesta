@@ -9,6 +9,7 @@ import {
   NotFoundException,
   ParseIntPipe,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
@@ -22,6 +23,7 @@ import { UserEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
+import { HideSensitiveDataInterceptor } from 'src/users/interceptors/hide-sensitive-info.interceptor';
 
 @Controller('users')
 @ApiTags('users')
@@ -29,11 +31,12 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  //@UseInterceptors(HideSensitiveDataInterceptor)
   @ApiCreatedResponse({ type: UserEntity })
   @ApiBody({ type: CreateUserDto })
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
-    return this.toUserResponse(user);
+    return user;
   }
 
   @Get()
@@ -57,6 +60,7 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseInterceptors(HideSensitiveDataInterceptor)
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
@@ -67,7 +71,7 @@ export class UsersController {
   ) {
     const user = await this.usersService.update(id, updateUserDto);
 
-    return this.toUserResponse(user);
+    return user;
   }
 
   @Delete(':id')
@@ -76,12 +80,5 @@ export class UsersController {
   @ApiOkResponse({ type: UserEntity })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
-  }
-
-  private toUserResponse(user: UserEntity) {
-    const userCopy = { ...user };
-    delete userCopy.password;
-    delete userCopy.refreshToken;
-    return userCopy;
   }
 }

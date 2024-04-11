@@ -32,7 +32,7 @@ model WorkingDay {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId], map: "working_day_user_id_index")
+  @@index([checkInTime], map: "working_day_check_in_time_index")
   @@index([userId, checkInTime], map: "working_day_user_id_check_in_time_index")
 }
 

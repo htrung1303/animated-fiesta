@@ -1,5 +1,6 @@
 import { $Enums, User } from '@prisma/client';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 export class UserEntity implements User {
   @ApiProperty()
@@ -14,7 +15,8 @@ export class UserEntity implements User {
   @ApiProperty()
   lastName: string;
 
-  @ApiHideProperty()
+  @Exclude()
+  @ApiProperty()
   password: string;
 
   @ApiProperty()
@@ -23,9 +25,11 @@ export class UserEntity implements User {
   @ApiProperty()
   createdAt: Date;
 
+  @Exclude()
   @ApiProperty()
   updatedAt: Date;
 
-  @ApiHideProperty()
+  @Exclude()
+  @ApiProperty()
   refreshToken: string;
 }
